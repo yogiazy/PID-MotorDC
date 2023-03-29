@@ -6,3 +6,5 @@ https://www.tinkercad.com/things/jhi7XCHXMN2-magnificent-kup-jarv.
 
 The library that used in this scheme
 https://github.com/br3ttb/Arduino-PID-Library.
+
+![The wire diagram using Thinkercad](https://github.com/yogiazy/PID-MotorDC/blob/master/wire-diagram.png)
