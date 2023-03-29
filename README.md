@@ -4,7 +4,7 @@ A PID controller is a type of feedback controller that uses proportional, integr
 - The simulation of the driver motor using IC L293D at Thinkercad <br>
 https://www.tinkercad.com/things/jhi7XCHXMN2-magnificent-kup-jarv.
 
-- The library that used in this scheme <br>
+- The PID library that used in this scheme <br>
 https://github.com/br3ttb/Arduino-PID-Library.
 
 - The wire diagram using Thinkercad.
