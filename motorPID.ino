@@ -11,14 +11,18 @@ volatile unsigned int pulseCount = 0; // pulse counter
 unsigned long lastTime = 0; // last time a pulse was detected
 unsigned int rpm = 0; // revolutions per minute
 
-// variables for PID control
+//Define Variables we'll be connecting to
 double Setpoint, Input, Output;
-double Kp = 0.01, Ki = 2.8, Kd = 0.0125;
 
-// initialize the PID library
-PID myPID(&Input, &Output, &Setpoint, Kp, Ki, Kd, DIRECT);
+//Define the aggressive and conservative Tuning Parameters
+double aggKp=0.0992, aggKi=0.2027212, aggKd=0,0031;
+double consKp=0, consKi=0, consKd=0;
 
-void setup() {
+//Specify the links and initial tuning parameters
+PID myPID(&Input, &Output, &Setpoint, consKp, consKi, consKd, DIRECT);
+
+void setup()
+{
   // set the pins for the motor driver as output
   pinMode(in1, OUTPUT);
   pinMode(in2, OUTPUT);
@@ -33,12 +37,12 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(SENSOR), pulseDetect, RISING);
 
   // set the PID control parameters
-  Setpoint = 250;  // target RPM
+  Setpoint = 100;  // target RPM
   myPID.SetMode(AUTOMATIC);  // enable PID control
 }
 
-void loop() {
-  // read the RPM from the optocoupler sensor
+void loop()
+{
   digitalWrite(VCC, HIGH);
   int rpm = readRPM();
 
@@ -46,9 +50,20 @@ void loop() {
   Input = rpm;
 
   // compute the PID output
-  myPID.Compute();
 
-  // map the PID output to the PWM value for the motor driver
+  
+  double gap = abs(Setpoint-Input); //distance away from setpoint
+  if(gap<10)
+  {  //we're close to setpoint, use conservative tuning parameters
+    myPID.SetTunings(consKp, consKi, consKd);
+  }
+  else
+  {
+     //we're far from setpoint, use aggressive tuning parameters
+     myPID.SetTunings(aggKp, aggKi, aggKd);
+  }
+  
+  myPID.Compute();
   int pwmValue = Output;
 
   // set the direction of the motor based on the sign of the PWM value
@@ -75,7 +90,6 @@ void loop() {
   // wait for a short time before the next iteration
   delay(1000);
 }
-
 int readRPM() {
   if (millis() - lastTime >= 1000) {
     detachInterrupt(digitalPinToInterrupt(SENSOR)); // disable interrupt during RPM calculation
