@@ -1,5 +1,4 @@
 #include <PID_v1.h>
-
 #define POT_PIN A0
 #define enA 9
 #define in2 8
@@ -15,8 +14,7 @@ double aggKp=0.0992, aggKi=0.2027212, aggKd=0,0031;
 double consKp=0, consKi=0, consKd=0;
 PID myPID(&Input, &Output, &Setpoint, consKp, consKi, consKd, DIRECT);
 
-void setup()
-{
+void setup() {
   pinMode(in1, OUTPUT);
   pinMode(in2, OUTPUT);
   pinMode(enA, OUTPUT);
@@ -24,23 +22,19 @@ void setup()
   pinMode(VCC, OUTPUT);
   Serial.begin(9600);
   attachInterrupt(digitalPinToInterrupt(SENSOR), pulseDetect, RISING);
-
   Setpoint = 100;
   myPID.SetMode(AUTOMATIC);
 }
 
-void loop()
-{
+void loop() {
   digitalWrite(VCC, HIGH);
   int rpm = readRPM();
   Input = rpm;
   double gap = abs(Setpoint-Input);
-  if(gap<10)
-  { 
+  if (gap<10) { 
     myPID.SetTunings(consKp, consKi, consKd);
   }
-  else
-  {
+  else {
      myPID.SetTunings(aggKp, aggKi, aggKd);
   }
   
@@ -55,7 +49,7 @@ void loop()
     digitalWrite(in2, LOW);
     pwmValue = -pwmValue;
   }
-
+  
   analogWrite(enA, pwmValue);
   Serial.print("SET: ");
   Serial.print(Setpoint);
